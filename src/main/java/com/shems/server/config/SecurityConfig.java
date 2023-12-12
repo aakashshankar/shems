@@ -35,8 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/api-docs").permitAll()
                         .anyRequest().authenticated())
-                .oauth2Login(Customizer.withDefaults())
-                .logout(logout -> logout.addLogoutHandler(logoutHandler()));
+                .oauth2Login(Customizer.withDefaults());
         return http.build();
     }
 
@@ -51,14 +50,4 @@ public class SecurityConfig {
         };
     }
 
-    private LogoutHandler logoutHandler() {
-        return (request, response, authentication) -> {
-            try {
-                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-                response.sendRedirect(issuer + "v2/logout?client_id=" + clientId + "&returnTo=" + baseUrl);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
-    }
 }

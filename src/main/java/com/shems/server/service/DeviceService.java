@@ -14,6 +14,6 @@ public class DeviceService {
     private DeviceRepository deviceRepository;
 
     public List<Device> findAllByCustomerId(Long customerId) {
-        return deviceRepository.findAllByCustomerId(customerId);
+        return deviceRepository.findAllByUserId(customerId);
     }
 }
