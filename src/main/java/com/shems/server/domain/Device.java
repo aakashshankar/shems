@@ -1,0 +1,29 @@
+package com.shems.server.domain;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
+
+@Entity
+@Table(name = "devices")
+@Getter
+@Setter
+public class Device {
+
+    @Id
+    private Long id;
+
+    @Column(nullable = false)
+    private Integer modelNumber;
+
+    @ManyToOne
+    private Location location;
+
+    @Column(nullable = false)
+    private String type;
+
+    @Column(nullable = false)
+    private Date enrollmentDate;
+}

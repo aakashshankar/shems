@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shems2
+    username: postgres
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        format_sql: true
+okta:
+  oauth2:
+    issuer: https://ahhcash.us.auth0.com/
+    client-id: F7pHNY16hnX2aKGf4Ysk4iOnsHRBdRuZ
+    client-secret: ${OKTA_CLIENT_SECRET}
+
+client:
+  origin-url: http://localhost:3000
+
+springdoc.api-docs.path: /api-docs
