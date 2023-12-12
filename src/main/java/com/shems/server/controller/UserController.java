@@ -9,12 +9,10 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/v1/user")
+@RestController
+@RequestMapping("/api/v1/user")
 public class UserController {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(UserController.class);

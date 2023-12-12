@@ -19,5 +19,4 @@ okta:
 
 client:
   origin-url: http://localhost:3000
-
 springdoc.api-docs.path: /api-docs
