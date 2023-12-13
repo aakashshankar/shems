@@ -11,11 +11,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
         format_sql: true
-okta:
-  oauth2:
-    issuer: https://ahhcash.us.auth0.com/
-    client-id: F7pHNY16hnX2aKGf4Ysk4iOnsHRBdRuZ
-    client-secret: ${OKTA_CLIENT_SECRET}
 
 client:
   origin-url: http://localhost:3000

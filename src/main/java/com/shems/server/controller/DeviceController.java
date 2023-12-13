@@ -38,5 +38,4 @@ public class DeviceController {
                 .body(deviceToDeviceResponseConverter.convert(deviceService.register(customerId, device)));
     }
 
-
 }

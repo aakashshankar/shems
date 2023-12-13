@@ -12,7 +12,6 @@ import java.util.Date;
 @Service
 public class UserService {
 
-
     @Inject
     private UserRepository userRepository;
 

@@ -31,7 +31,6 @@ public class UserController {
                 .body(converter.convert(userService.register(request)));
     }
 
-
     @GetMapping("/me")
     String user() {
         return "Hello World!";
