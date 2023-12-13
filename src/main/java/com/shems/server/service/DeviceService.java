@@ -18,7 +18,7 @@ public class DeviceService {
         return deviceRepository.findAllByUserId(customerId);
     }
 
-    public Device register(Long customerId, DeviceRequest device) {
+    public Device register(DeviceRequest device) {
         Device toSave = new Device();
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());

@@ -1,10 +1,12 @@
 package com.shems.server.controller;
 
+import com.shems.server.context.UserContext;
 import com.shems.server.converter.DeviceToDeviceResponseConverter;
 import com.shems.server.dto.request.DeviceRequest;
 import com.shems.server.dto.response.DeviceResponse;
 import com.shems.server.service.DeviceService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +26,20 @@ public class DeviceController {
     @Inject
     private DeviceToDeviceResponseConverter deviceToDeviceResponseConverter;
 
-    @GetMapping("{customerId}/get")
-    ResponseEntity<List<DeviceResponse>> getDevices(@PathVariable Long customerId) {
+    @GetMapping("/get")
+    ResponseEntity<List<DeviceResponse>> getDevices() {
+        Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching all devices for customer with id {}", customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllByCustomerId(customerId)));
     }
 
-    @PostMapping("{customerId}/add")
-    ResponseEntity<DeviceResponse> addDevice(@PathVariable Long customerId, @RequestBody DeviceRequest device) {
+    @PostMapping("/add")
+    ResponseEntity<DeviceResponse> addDevice(@RequestBody @Valid  DeviceRequest device) {
+        Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Adding device {} for customer with id {}", device, customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(deviceToDeviceResponseConverter.convert(deviceService.register(customerId, device)));
+                .body(deviceToDeviceResponseConverter.convert(deviceService.register(device)));
     }
 
 }

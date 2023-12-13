@@ -1,5 +1,6 @@
 package com.shems.server.controller;
 
+import com.shems.server.context.UserContext;
 import com.shems.server.converter.LocationToLocationResponseConverter;
 import com.shems.server.dto.request.LocationRequest;
 import com.shems.server.dto.response.LocationResponse;
@@ -19,9 +20,9 @@ public class LocationController {
     @Inject
     private LocationToLocationResponseConverter converter;
 
-    @PostMapping("{customerId}/register")
-    ResponseEntity<LocationResponse> register(@PathVariable Long customerId,
-                                              @RequestBody @Valid LocationRequest request) {
+    @PostMapping("register")
+    ResponseEntity<LocationResponse> register(@RequestBody @Valid LocationRequest request) {
+        Long customerId = UserContext.getCurrentUser();
         return ResponseEntity.ok().body(converter.convert(locationService.register(customerId, request)));
     }
 }
