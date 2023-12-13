@@ -23,4 +23,8 @@ public class UserService {
 
         return userRepository.save(toSave);
     }
+
+    public User findById(Long customerId) {
+        return userRepository.findById(customerId).orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }
