@@ -11,7 +11,7 @@ import java.util.Collection;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    @Query(value = "SELECT l FROM locations l WHERE l.user_id = :customerId",
+    @Query(value = "SELECT * FROM locations l WHERE l.user_id = :customerId",
             nativeQuery = true)
     Collection<Location> findAllByUserId(@Param("customerId") Long customerId);
 }
