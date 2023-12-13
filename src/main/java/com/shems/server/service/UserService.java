@@ -16,12 +16,16 @@ public class UserService {
     private UserRepository userRepository;
 
     public User register(UserRequest request) {
-        User toSave = new User();
+        User toSave = checkForExistingUser(request.getEmail());
         toSave.setName(request.getName());
         toSave.setEmail(request.getEmail());
         toSave.setSignUpDate(Date.from(Instant.now()));
 
         return userRepository.save(toSave);
+    }
+
+    private User checkForExistingUser(String email) {
+        return userRepository.findByEmail(email).orElseGet(User::new);
     }
 
     public User findById(Long customerId) {
