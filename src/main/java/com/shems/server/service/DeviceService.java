@@ -6,6 +6,7 @@ import com.shems.server.dto.request.DeviceRequest;
 import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -23,5 +24,9 @@ public class DeviceService {
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());
         return deviceRepository.save(toSave);
+    }
+
+    public Collection<Device> findAllUnregistered(Long customer) {
+        return deviceRepository.findAllUnregistered(customer);
     }
 }

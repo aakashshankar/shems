@@ -42,4 +42,12 @@ public class DeviceController {
                 .body(deviceToDeviceResponseConverter.convert(deviceService.register(device)));
     }
 
+    @GetMapping("/unregistered")
+    ResponseEntity<List<DeviceResponse>> getUnregisteredDevices() {
+        Long customer = UserContext.getCurrentUser();
+        LOGGER.info("Fetching all unregistered devices for customer with id {}", customer);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllUnregistered(customer)));
+    }
+
 }

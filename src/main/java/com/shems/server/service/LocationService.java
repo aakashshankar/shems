@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
 
 @Service
@@ -29,5 +30,9 @@ public class LocationService {
         toSave.setStartDate(Date.from(Instant.now()));
         repository.save(toSave);
         return toSave;
+    }
+
+    public Collection<Location> getAllForUser(Long customerId) {
+        return repository.findAllByUserId(customerId);
     }
 }

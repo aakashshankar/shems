@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/location")
 public class LocationController {
@@ -24,5 +26,11 @@ public class LocationController {
     ResponseEntity<LocationResponse> register(@RequestBody @Valid LocationRequest request) {
         Long customerId = UserContext.getCurrentUser();
         return ResponseEntity.ok().body(converter.convert(locationService.register(customerId, request)));
+    }
+
+    @GetMapping("all")
+    ResponseEntity<List<LocationResponse>> getAll() {
+        Long customerId = UserContext.getCurrentUser();
+        return ResponseEntity.ok().body(converter.convertAll(locationService.getAllForUser(customerId)));
     }
 }
