@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/events")
-public class EventsController {
+public class EventController {
 
     @GetMapping("/get_for_interval")
     ResponseEntity<EventResponse> getEventsForInterval(@RequestBody @Valid EventRequest request) {

@@ -13,6 +13,8 @@ import java.util.Date;
 public class Device {
 
     @Id
+    @SequenceGenerator(name = "device_id_generator", sequenceName = "device_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "device_id_generator")
     private Long id;
 
     @Column(nullable = false)
