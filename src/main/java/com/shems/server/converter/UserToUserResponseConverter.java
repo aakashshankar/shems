@@ -12,6 +12,7 @@ public class UserToUserResponseConverter {
         response.setId(source.getId());
         response.setName(source.getName());
         response.setEmail(source.getEmail());
+        response.setAddress(source.getBillingAddress());
         return response;
     }
 }
