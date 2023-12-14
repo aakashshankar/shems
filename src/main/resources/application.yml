@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/shems2
+    url: jdbc:postgresql://db.fntrcmnsmorszeyynwjk.supabase.co:5432/postgres
     username: postgres
-    password:
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop

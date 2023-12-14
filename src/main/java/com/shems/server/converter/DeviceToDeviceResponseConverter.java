@@ -18,6 +18,7 @@ public class DeviceToDeviceResponseConverter {
         DeviceResponse response = new DeviceResponse();
         response.setType(source.getType());
         response.setModelNumber(source.getModelNumber());
+        response.setId(source.getId());
         response.setLocation(locationToLocationResponseConverter.convert(source.getLocation()));
         return response;
     }

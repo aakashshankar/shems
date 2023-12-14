@@ -7,6 +7,7 @@ import com.shems.server.dto.response.LocationResponse;
 import com.shems.server.service.LocationService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/location")
 public class LocationController {
+
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LocationController.class);
 
     @Inject
     private LocationService locationService;
@@ -25,12 +28,14 @@ public class LocationController {
     @PostMapping("register")
     ResponseEntity<LocationResponse> register(@RequestBody @Valid LocationRequest request) {
         Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Registering location with zipcode: {}, for customer: {}", request.getZipCode(), customerId);
         return ResponseEntity.ok().body(converter.convert(locationService.register(customerId, request)));
     }
 
     @GetMapping("all")
     ResponseEntity<List<LocationResponse>> getAll() {
         Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching all locations for current user: {}", customerId);
         return ResponseEntity.ok().body(converter.convertAll(locationService.getAllForUser(customerId)));
     }
 }
