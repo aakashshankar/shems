@@ -1,5 +1,6 @@
 package com.shems.server.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class LocationRequest {
     private Integer numberOfOccupants;
 
     @NotNull(message = "You need to specify the address!")
+    @NotBlank(message = "Why is the address empty?")
     private String address;
 
     private String zipCode;
