@@ -16,6 +16,7 @@ public class LocationRequest {
     @NotNull(message = "You need to specify the number of bedrooms!")
     private Integer numberOfBedrooms;
 
+    @NotNull(message = "How many people live in this location?")
     private Integer numberOfOccupants;
 
     @NotNull(message = "You need to specify the address!")
