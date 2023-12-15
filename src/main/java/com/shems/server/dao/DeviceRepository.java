@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    String baseQuery = "SELECT d.id, d.modelnumber, d.type, d.location_id, d.enrollmentdate FROM devices d";
+    String baseQuery = "SELECT d.id, d.model_number, d.type, d.location_id, d.enrollment_date FROM devices d";
 
-    @Query(value = baseQuery + " JOIN location l ON d.location_id = l.id " +
-            "JOIN customers c ON c.id = l.customer_id " +
+    @Query(value = baseQuery + " JOIN locations l ON d.location_id = l.id " +
+            "JOIN customers c ON c.id = l.user_id " +
             "WHERE c.id = :customerId", nativeQuery = true)
     List<Device> findAllByUserId(@Param("customerId") Long customerId);
 

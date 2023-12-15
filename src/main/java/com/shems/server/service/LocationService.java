@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
+import static java.lang.String.format;
+
 @Service
 public class LocationService {
 
@@ -18,6 +20,11 @@ public class LocationService {
 
     @Inject
     private UserService userService;
+
+    public Location findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException(format("Location with id: %s not found", id)));
+    }
 
     public Location register(Long customerId, LocationRequest request) {
         Location toSave = new Location();

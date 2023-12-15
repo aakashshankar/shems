@@ -26,6 +26,7 @@ public class DeviceToDeviceResponseConverter {
         } else {
             response.setLocation(null);
         }
+        response.setEnrollmentDate(source.getEnrollmentDate());
         return response;
     }
 

@@ -12,6 +12,7 @@ public class LocationToLocationResponseConverter {
 
     public LocationResponse convert(Location src) {
         LocationResponse response = new LocationResponse();
+        response.setId(src.getId());
         response.setAddress(src.getAddress());
         response.setZipCode(src.getZipCode());
         return response;

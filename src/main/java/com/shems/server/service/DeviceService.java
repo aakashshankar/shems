@@ -18,6 +18,9 @@ public class DeviceService {
     @Inject
     private DeviceRepository deviceRepository;
 
+    @Inject
+    private LocationService locationService;
+
     public List<Device> findAllByCustomerId(Long customerId) {
         return deviceRepository.findAllByUserId(customerId);
     }
@@ -26,7 +29,7 @@ public class DeviceService {
         Device toSave = new Device();
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());
-        toSave.setLocation(null);
+        toSave.setLocation(locationService.findById(device.getLocationId()));
         toSave.setEnrollmentDate(Date.from(now()));
         return deviceRepository.save(toSave);
     }

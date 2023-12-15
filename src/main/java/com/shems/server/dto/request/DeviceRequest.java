@@ -10,4 +10,6 @@ public class DeviceRequest {
     private String type;
 
     private Integer modelNumber;
+
+    private Long locationId;
 }
