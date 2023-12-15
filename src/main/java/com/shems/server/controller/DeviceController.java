@@ -2,6 +2,7 @@ package com.shems.server.controller;
 
 import com.shems.server.context.UserContext;
 import com.shems.server.converter.DeviceToDeviceResponseConverter;
+import com.shems.server.dto.request.DeleteDevicesRequest;
 import com.shems.server.dto.request.DeviceRequest;
 import com.shems.server.dto.response.DeviceResponse;
 import com.shems.server.service.DeviceService;
@@ -48,6 +49,23 @@ public class DeviceController {
         LOGGER.info("Fetching all unregistered devices for customer with id {}", customer);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllUnregistered(customer)));
+    }
+
+    @DeleteMapping("{deviceId}/delete")
+    ResponseEntity<Void> deleteDevice(@PathVariable Long deviceId) {
+        Long customer = UserContext.getCurrentUser();
+        LOGGER.info("Deleting device with id {} for customer with id {}", deviceId, customer);
+        deviceService.delete(deviceId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete_multiple")
+    ResponseEntity<Void> deleteMultipleDevices(@RequestBody @Valid DeleteDevicesRequest request) {
+        Long customer = UserContext.getCurrentUser();
+        LOGGER.info("Deleting {} devices for customer with id {}", request.getDeviceIds().size(),
+                customer);
+        deviceService.delete(request.getDeviceIds());
+        return ResponseEntity.ok().build();
     }
 
 }

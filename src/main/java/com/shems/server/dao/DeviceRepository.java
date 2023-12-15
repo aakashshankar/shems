@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
@@ -18,4 +19,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     @Query("SELECT d FROM Device d WHERE d.location IS NULL AND d.location.user.id = :customerId")
     List<Device> findAllUnregistered(@Param("customerId") Long customer);
+
+    @Query(nativeQuery = true, value = "DELETE FROM devices d WHERE d.id = :deviceId")
+    void deleteById(@Param("deviceId") Long deviceId);
+
+    @Query(nativeQuery = true, value = "DELETE FROM devices d WHERE d.id IN (:deviceIds)")
+    void deleteByIds(@Param("deviceIds") Collection<Long> deviceIds);
 }

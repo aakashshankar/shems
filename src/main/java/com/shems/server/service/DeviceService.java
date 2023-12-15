@@ -37,4 +37,12 @@ public class DeviceService {
     public Collection<Device> findAllUnregistered(Long customer) {
         return deviceRepository.findAllUnregistered(customer);
     }
+
+    public void delete(Long deviceId) {
+        deviceRepository.deleteById(deviceId);
+    }
+
+    public void delete(Collection<Long> deviceIds) {
+        deviceRepository.deleteByIds(deviceIds);
+    }
 }
