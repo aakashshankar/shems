@@ -53,6 +53,9 @@ public class UserFilter extends OncePerRequestFilter {
 
     private String getUser(HttpServletRequest request) {
         String server = request.getServerName();
+        if (server.startsWith("localhost")) {
+            return null;
+        }
         return server.substring(0, server.indexOf("."));
     }
 }
