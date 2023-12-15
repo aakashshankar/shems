@@ -13,7 +13,8 @@ import java.util.Date;
 public class Location {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "location_generator", sequenceName = "locations_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "location_generator")
     private Long id;
 
     @ManyToOne

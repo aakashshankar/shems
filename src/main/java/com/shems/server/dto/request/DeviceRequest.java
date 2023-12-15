@@ -9,15 +9,12 @@ import lombok.Setter;
 @Setter
 public class DeviceRequest {
 
-    @NotEmpty(message = "Type cannot be empty")
-    @NotNull
+    @NotNull(message = "What's the device's type?")
     private String type;
 
-    @NotEmpty(message = "Model number cannot be empty")
-    @NotNull
+    @NotNull(message = "What's the device's model number?")
     private Integer modelNumber;
 
-    @NotEmpty(message = "Device needs to have a location!")
-    @NotNull
+    @NotNull(message = "What's the device's location?")
     private Long locationId;
 }

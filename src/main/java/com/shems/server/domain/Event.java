@@ -13,7 +13,8 @@ import java.util.Date;
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "event_generator", sequenceName = "events_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "event_generator")
     private Long id;
 
     @ManyToOne

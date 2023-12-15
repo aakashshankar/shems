@@ -9,18 +9,15 @@ import lombok.Setter;
 @Setter
 public class LocationRequest {
 
-    @NotEmpty(message = "You need to specify the square footage of the location!")
-    @NotNull
+    @NotNull(message = "You need to specify the square footage!")
     private Double squareFootage;
 
-    @NotEmpty(message = "How many bedrooms?")
-    @NotNull
+    @NotNull(message = "You need to specify the number of bedrooms!")
     private Integer numberOfBedrooms;
 
     private Integer numberOfOccupants;
 
-    @NotEmpty(message = "Address cannot be empty")
-    @NotNull
+    @NotNull(message = "You need to specify the address!")
     private String address;
 
     private String zipCode;

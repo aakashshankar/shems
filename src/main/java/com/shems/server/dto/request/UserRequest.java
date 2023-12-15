@@ -10,12 +10,10 @@ import lombok.Setter;
 public class UserRequest {
 
 
-    @NotNull
-    @NotEmpty(message = "Name cannot be empty")
+    @NotNull(message = "Name cannot be null")
     private String name;
 
-    @NotNull
-    @NotEmpty(message = "Email cannot be empty")
+    @NotNull(message = "Email cannot be null")
     private String email;
 
     private String billingAddress;
