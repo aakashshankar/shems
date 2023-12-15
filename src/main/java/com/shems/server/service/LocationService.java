@@ -4,11 +4,13 @@ import com.shems.server.dao.LocationRepository;
 import com.shems.server.domain.Location;
 import com.shems.server.dto.request.LocationRequest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -41,5 +43,18 @@ public class LocationService {
 
     public Collection<Location> getAllForUser(Long customerId) {
         return repository.findAllByUserId(customerId);
+    }
+
+    public void delete(Long customerId, Collection<Long> locationIds) {
+        Collection<Location> locations = repository.findAllById(locationIds);
+        if (locations.size() != locationIds.size()) {
+            throw new BadRequestException("Some of the locations were not found");
+        }
+        locations.forEach(location -> {
+            if (!location.getUser().getId().equals(customerId)) {
+                throw new BadRequestException("Some of the locations do not belong to the current user");
+            }
+        });
+        repository.deleteByIds(locationIds);
     }
 }

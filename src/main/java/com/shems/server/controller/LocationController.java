@@ -38,4 +38,13 @@ public class LocationController {
         LOGGER.info("Fetching all locations for current user: {}", customerId);
         return ResponseEntity.ok().body(converter.convertAll(locationService.getAllForUser(customerId)));
     }
+
+    @DeleteMapping("delete_multiple")
+    ResponseEntity<Void> deleteMultiple(@RequestBody List<Long> locationIds) {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Deleting locations: {} for customer: {}", locationIds, customerId);
+        locationService.delete(customerId, locationIds);
+        return ResponseEntity.ok().build();
+    }
+
 }

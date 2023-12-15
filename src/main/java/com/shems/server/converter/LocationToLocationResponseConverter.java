@@ -15,6 +15,10 @@ public class LocationToLocationResponseConverter {
         response.setId(src.getId());
         response.setAddress(src.getAddress());
         response.setZipCode(src.getZipCode());
+        response.setNumberOfBedrooms(src.getNumberOfBedrooms());
+        response.setSquareFootage(src.getSquareFootage());
+        response.setNumberOfOccupants(src.getNumberOfOccupants());
+
         return response;
     }
 

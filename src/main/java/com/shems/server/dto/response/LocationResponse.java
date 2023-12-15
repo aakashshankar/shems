@@ -12,4 +12,10 @@ public class LocationResponse {
     private String address;
 
     private String zipCode;
+
+    private Integer numberOfBedrooms;
+
+    private Double squareFootage;
+
+    private Integer numberOfOccupants;
 }
