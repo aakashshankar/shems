@@ -16,11 +16,10 @@ public class UserFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(UserFilter.class);
 
-    private static final String HEADER = "x-user";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        LOGGER.info("Intercepted request {} with user {}", request.getRequestURI(), request.getHeader(HEADER));
+        LOGGER.info("Intercepted request {}", request.getRequestURI());
+        LOGGER.info("Details: {}", request.getServerName());
         String user = getUser(request);
 
         if (null == user) {
@@ -53,10 +52,7 @@ public class UserFilter extends OncePerRequestFilter {
     }
 
     private String getUser(HttpServletRequest request) {
-        String header = request.getHeader(HEADER);
-        if (null == header) {
-            header = request.getParameter(HEADER);
-        }
-        return header;
+        String server = request.getServerName();
+        return server.substring(0, server.indexOf("."));
     }
 }
