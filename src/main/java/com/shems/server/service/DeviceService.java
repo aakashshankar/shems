@@ -7,7 +7,10 @@ import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+
+import static java.time.Instant.now;
 
 @Service
 public class DeviceService {
@@ -23,6 +26,8 @@ public class DeviceService {
         Device toSave = new Device();
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());
+        toSave.setLocation(null);
+        toSave.setEnrollmentDate(Date.from(now()));
         return deviceRepository.save(toSave);
     }
 

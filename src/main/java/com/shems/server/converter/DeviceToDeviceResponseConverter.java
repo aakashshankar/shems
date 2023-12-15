@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Component
 public class DeviceToDeviceResponseConverter {
 
@@ -19,7 +21,11 @@ public class DeviceToDeviceResponseConverter {
         response.setType(source.getType());
         response.setModelNumber(source.getModelNumber());
         response.setId(source.getId());
-        response.setLocation(locationToLocationResponseConverter.convert(source.getLocation()));
+        if (nonNull(source.getLocation())) {
+            response.setLocation(locationToLocationResponseConverter.convert(source.getLocation()));
+        } else {
+            response.setLocation(null);
+        }
         return response;
     }
 
