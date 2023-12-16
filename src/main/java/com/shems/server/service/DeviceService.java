@@ -42,7 +42,7 @@ public class DeviceService {
     }
 
     public Device register(DeviceRequest device) {
-        validateAllowedType(device.getType());
+        validateAllowedType(device.getType(), device.getModelNumber());
         Device toSave = new Device();
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());
