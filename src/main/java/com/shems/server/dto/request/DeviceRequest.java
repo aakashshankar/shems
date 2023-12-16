@@ -15,7 +15,7 @@ public class DeviceRequest {
     private String type;
 
     @NotNull(message = "What's the device's model number?")
-    private Integer modelNumber;
+    private String modelNumber;
 
     @NotNull(message = "What's the device's location?")
     private Long locationId;

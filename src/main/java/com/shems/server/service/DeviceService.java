@@ -1,21 +1,35 @@
 package com.shems.server.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.dao.DeviceRepository;
 import com.shems.server.domain.Device;
 import com.shems.server.dto.request.DeviceRequest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.time.Instant.now;
 
 @Service
 public class DeviceService {
+
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DeviceService.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static final String ALLOWED_TYPES_FILENAME = "classpath:devicetypes.json";
 
     @Inject
     private DeviceRepository deviceRepository;
@@ -28,12 +42,28 @@ public class DeviceService {
     }
 
     public Device register(DeviceRequest device) {
+        validateAllowedType(device.getType());
         Device toSave = new Device();
         toSave.setModelNumber(device.getModelNumber());
         toSave.setType(device.getType());
         toSave.setLocation(locationService.findById(device.getLocationId()));
         toSave.setEnrollmentDate(Date.from(now()));
+
+        LOGGER.info("Saving device {}", toSave);
         return deviceRepository.save(toSave);
+    }
+
+    private void validateAllowedType(String type, String modelNumber) {
+        try {
+            File allowed = ResourceUtils.getFile(ALLOWED_TYPES_FILENAME);
+            Map<String, List<String>> allowedTypes = MAPPER.readValue(allowed, new TypeReference<>() {});
+            if (!allowedTypes.containsKey(type) || !allowedTypes.get(type).contains(modelNumber)) {
+                throw new BadRequestException(format("Device type %s and model number %s is not allowed", type, modelNumber));
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error reading allowed types file", e);
+            throw new BadRequestException("Error reading allowed types file");
+        }
     }
 
     public Collection<Device> findAllUnregistered(Long customer) {
@@ -45,6 +75,7 @@ public class DeviceService {
         deviceRepository.deleteById(deviceId);
         long after = deviceRepository.count();
         if (before == after) {
+            LOGGER.error("Device with id {} does not exist", deviceId);
             throw new BadRequestException(format("Device with id %d does not exist", deviceId));
         }
     }
@@ -54,6 +85,7 @@ public class DeviceService {
         deviceRepository.deleteByIds(deviceIds);
         long after = deviceRepository.count();
         if (before == after) {
+            LOGGER.error("Devices with ids {} do not exist", deviceIds);
             throw new BadRequestException(format("Devices with ids %s do not exist", deviceIds));
         }
     }

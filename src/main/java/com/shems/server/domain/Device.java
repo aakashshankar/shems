@@ -18,7 +18,7 @@ public class Device {
     private Long id;
 
     @Column(nullable = false)
-    private Integer modelNumber;
+    private String modelNumber;
 
     @ManyToOne
     private Location location;

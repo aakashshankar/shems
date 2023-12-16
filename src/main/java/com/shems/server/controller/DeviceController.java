@@ -1,5 +1,9 @@
 package com.shems.server.controller;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.context.UserContext;
 import com.shems.server.converter.DeviceToDeviceResponseConverter;
 import com.shems.server.dto.request.DeleteDevicesRequest;
@@ -8,18 +12,26 @@ import com.shems.server.dto.response.DeviceResponse;
 import com.shems.server.service.DeviceService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.BadRequestException;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/device")
 public class DeviceController {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DeviceController.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
     private DeviceService deviceService;
@@ -66,6 +78,19 @@ public class DeviceController {
                 customer);
         deviceService.delete(request.getDeviceIds());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/allowed")
+    ResponseEntity<Map<String, List<String>>> getAllowedDevices() {
+        try {
+            File file = ResourceUtils.getFile("classpath:devicetypes.json");
+            Map<String, List<String>> allowedDevices = MAPPER.readValue(file, new TypeReference<>() {
+            });
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(allowedDevices);
+        } catch (IOException e) {
+            throw new BadRequestException("Error reading allowed devices", e);
+        }
+
     }
 
 }

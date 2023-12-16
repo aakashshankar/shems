@@ -47,7 +47,7 @@ public class UserFilter extends OncePerRequestFilter {
     }
 
     private boolean permittedURIs(String requestURI) {
-        return requestURI.matches(".*/user/register.*")
+        return requestURI.matches(".*/user/register.*") || requestURI.matches(".*/device/allowed.*")
                 || requestURI.matches("/api-docs.*");
     }
 

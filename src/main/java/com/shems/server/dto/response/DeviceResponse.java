@@ -13,7 +13,7 @@ public class DeviceResponse {
 
     private String type;
 
-    private Integer modelNumber;
+    private String modelNumber;
 
     private LocationResponse location;
 
