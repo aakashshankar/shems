@@ -77,6 +77,14 @@ public class DeviceController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("{locationId}/get")
+    ResponseEntity<List<DeviceResponse>> getForLocation(@PathVariable Long locationId) {
+        Long customer = UserContext.getCurrentUser();
+        LOGGER.info("Fetching all devices for location with id {} for customer with id {}", locationId, customer);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllByLocationId(customer, locationId)));
+    }
+
     @GetMapping("/allowed")
     ResponseEntity<Map<String, List<String>>> allowed() {
         try {

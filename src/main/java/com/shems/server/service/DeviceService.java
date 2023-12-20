@@ -89,4 +89,8 @@ public class DeviceService {
             throw new BadRequestException(format("Devices with ids %s do not exist", deviceIds));
         }
     }
+
+    public Collection<Device> findAllByLocationId(Long customerId, Long locationId) {
+        return deviceRepository.findAllByLocationId(customerId, locationId);
+    }
 }

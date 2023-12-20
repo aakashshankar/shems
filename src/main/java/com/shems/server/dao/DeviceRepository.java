@@ -19,7 +19,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(value = baseQuery + " WHERE c.id = :customerId", nativeQuery = true)
     List<Device> findAllByUserId(@Param("customerId") Long customerId);
 
-    @Query("SELECT d FROM Device d WHERE d.location IS NULL AND d.location.user.id = :customerId")
+    @Query(value = baseQuery + " WHERE c.id = :customerId AND d.location_id IS NULL", nativeQuery = true)
     List<Device> findAllUnregistered(@Param("customerId") Long customer);
 
     @Query(value = "SELECT count(*) FROM devices d", nativeQuery = true)
@@ -34,4 +34,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Transactional
     @Query(nativeQuery = true, value = "DELETE FROM devices d WHERE d.id IN (:deviceIds)")
     void deleteByIds(@Param("deviceIds") Collection<Long> deviceIds);
+
+    @Query(nativeQuery = true, value = baseQuery + " WHERE c.id = :customerId AND l.id = :locationId")
+    Collection<Device> findAllByLocationId(Long customerId, Long locationId);
 }
