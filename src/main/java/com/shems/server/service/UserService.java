@@ -20,7 +20,7 @@ public class UserService {
         toSave.setName(request.getName());
         toSave.setEmail(request.getEmail());
         toSave.setSignUpDate(Date.from(Instant.now()));
-
+        toSave.setBillingAddress(request.getBillingAddress());
         return userRepository.save(toSave);
     }
 

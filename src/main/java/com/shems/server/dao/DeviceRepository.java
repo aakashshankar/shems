@@ -1,6 +1,7 @@
 package com.shems.server.dao;
 
 import com.shems.server.domain.Device;
+import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,7 +28,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value = "DELETE FROM devices d WHERE d.id = :deviceId")
-    void deleteById(@Param("deviceId") Long deviceId);
+    void deleteById(@Param("deviceId") @Nonnull Long deviceId);
 
     @Modifying
     @Transactional

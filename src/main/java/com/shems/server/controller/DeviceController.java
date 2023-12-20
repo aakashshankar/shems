@@ -1,8 +1,6 @@
 package com.shems.server.controller;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.context.UserContext;
 import com.shems.server.converter.DeviceToDeviceResponseConverter;
@@ -20,7 +18,6 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +37,7 @@ public class DeviceController {
     private DeviceToDeviceResponseConverter deviceToDeviceResponseConverter;
 
     @GetMapping("/get")
-    ResponseEntity<List<DeviceResponse>> getDevices() {
+    ResponseEntity<List<DeviceResponse>> getForUser() {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching all devices for customer with id {}", customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
@@ -48,7 +45,7 @@ public class DeviceController {
     }
 
     @PostMapping("/add")
-    ResponseEntity<DeviceResponse> addDevice(@RequestBody @Valid  DeviceRequest device) {
+    ResponseEntity<DeviceResponse> add(@RequestBody @Valid  DeviceRequest device) {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Adding device {} for customer with id {}", device, customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +53,7 @@ public class DeviceController {
     }
 
     @GetMapping("/unregistered")
-    ResponseEntity<List<DeviceResponse>> getUnregisteredDevices() {
+    ResponseEntity<List<DeviceResponse>> unregistered() {
         Long customer = UserContext.getCurrentUser();
         LOGGER.info("Fetching all unregistered devices for customer with id {}", customer);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +61,7 @@ public class DeviceController {
     }
 
     @DeleteMapping("{deviceId}/delete")
-    ResponseEntity<Void> deleteDevice(@PathVariable Long deviceId) {
+    ResponseEntity<Void> delete(@PathVariable Long deviceId) {
         Long customer = UserContext.getCurrentUser();
         LOGGER.info("Deleting device with id {} for customer with id {}", deviceId, customer);
         deviceService.delete(deviceId);
@@ -72,7 +69,7 @@ public class DeviceController {
     }
 
     @DeleteMapping("/delete_multiple")
-    ResponseEntity<Void> deleteMultipleDevices(@RequestBody @Valid DeleteDevicesRequest request) {
+    ResponseEntity<Void> deleteMultiple(@RequestBody @Valid DeleteDevicesRequest request) {
         Long customer = UserContext.getCurrentUser();
         LOGGER.info("Deleting {} devices for customer with id {}", request.getDeviceIds().size(),
                 customer);
@@ -81,7 +78,7 @@ public class DeviceController {
     }
 
     @GetMapping("/allowed")
-    ResponseEntity<Map<String, List<String>>> getAllowedDevices() {
+    ResponseEntity<Map<String, List<String>>> allowed() {
         try {
             File file = ResourceUtils.getFile("classpath:devicetypes.json");
             Map<String, List<String>> allowedDevices = MAPPER.readValue(file, new TypeReference<>() {
@@ -90,7 +87,6 @@ public class DeviceController {
         } catch (IOException e) {
             throw new BadRequestException("Error reading allowed devices", e);
         }
-
     }
 
 }
