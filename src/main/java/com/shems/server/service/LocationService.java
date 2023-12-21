@@ -5,6 +5,7 @@ import com.shems.server.domain.Location;
 import com.shems.server.dto.request.LocationRequest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -56,5 +57,10 @@ public class LocationService {
             }
         });
         repository.deleteByIds(locationIds);
+    }
+
+    public List<Pair<String, Double>> getTopConsumption(Long customerId) {
+        return repository.findTopConsumption(customerId).stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
+
     }
 }

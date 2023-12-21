@@ -1,8 +1,10 @@
 package com.shems.server.controller;
 
 import com.shems.server.context.UserContext;
+import com.shems.server.converter.LocationConsumptionToResponseConverter;
 import com.shems.server.converter.LocationToLocationResponseConverter;
 import com.shems.server.dto.request.LocationRequest;
+import com.shems.server.dto.response.LocationConsumptionResponse;
 import com.shems.server.dto.response.LocationResponse;
 import com.shems.server.service.LocationService;
 import jakarta.inject.Inject;
@@ -25,6 +27,9 @@ public class LocationController {
     @Inject
     private LocationToLocationResponseConverter converter;
 
+    @Inject
+    private LocationConsumptionToResponseConverter consumptionConverter;
+
     @PostMapping("register")
     ResponseEntity<LocationResponse> register(@RequestBody @Valid LocationRequest request) {
         Long customerId = UserContext.getCurrentUser();
@@ -45,6 +50,13 @@ public class LocationController {
         LOGGER.info("Deleting locations: {} for customer: {}", locationIds, customerId);
         locationService.delete(customerId, locationIds);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("consumption")
+    ResponseEntity<List<LocationConsumptionResponse>> consumption() {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching top consuming locations for customer: {}", customerId);
+        return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getTopConsumption(customerId)));
     }
 
 }
