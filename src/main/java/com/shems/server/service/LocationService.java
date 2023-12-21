@@ -84,10 +84,6 @@ public class LocationService {
     private Pair<Date, Date> identifyInterval(String last) {
         Date from, to;
         switch (last) {
-            case "three_months" -> {
-                from = Date.from(now().minus(90, DAYS));
-                to = Date.from(now());
-            }
             case "month" -> {
                 from = Date.from(now().minus(30, DAYS));
                 to = Date.from(now());
@@ -105,6 +101,9 @@ public class LocationService {
         if ("day".equals(last)) {
             return repository.findHourlyConsumptionForAllLocations(customerId,
                     Date.from(now().minus(1, DAYS)), Date.from(now()));
+        } else if ("three_months".equals(last)) {
+            return repository.findWeeklyConsumptionForAllLocations(customerId,
+                    Date.from(now().minus(90, DAYS)), Date.from(now()));
         } else {
             Pair<Date, Date> range = identifyInterval(last);
             Date from = range.getLeft();
