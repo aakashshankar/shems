@@ -31,4 +31,12 @@ public class PriceController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(converter.convert(priceService.getTotal(userId)));
     }
+
+    @GetMapping("/history")
+    ResponseEntity<PriceConsumptionResponse> getHistory() {
+        Long userId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching total historical price for user with id: {}", userId);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(converter.convert(priceService.getHistory(userId)));
+    }
 }

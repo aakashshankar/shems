@@ -6,6 +6,7 @@ import com.shems.server.converter.LocationToLocationResponseConverter;
 import com.shems.server.dto.request.LocationRequest;
 import com.shems.server.dto.response.LocationConsumptionResponse;
 import com.shems.server.dto.response.LocationResponse;
+import com.shems.server.dto.response.LocationTimeseriesResponse;
 import com.shems.server.service.LocationService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -56,7 +58,7 @@ public class LocationController {
     ResponseEntity<List<LocationConsumptionResponse>> consumption() {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching top consuming locations for customer: {}", customerId);
-        return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getTopConsumption(customerId)));
+        return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getConsumption(customerId)));
     }
 
     @GetMapping("total")
@@ -71,6 +73,21 @@ public class LocationController {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching average consumption for customer: {}", customerId);
         return ResponseEntity.ok().body(consumptionConverter.convertTotalAndAvg(locationService.getAvgConsumption(customerId)));
+    }
+
+    @GetMapping("consumption_interval")
+    ResponseEntity<List<LocationConsumptionResponse>> consumptionInInterval(@RequestParam("interval") String interval) {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching all consuming locations for customer: {} within the last {}", customerId, interval);
+        return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getConsumptionInterval(customerId, interval)));
+    }
+
+    @GetMapping("{id}/consumption_interval")
+    ResponseEntity<List<LocationTimeseriesResponse>> consumptionInInterval(@PathVariable("id") Long locationId,
+                                                                            @RequestParam("interval") String interval) {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching all consuming locations for customer: {} within the last {}", customerId, interval);
+        return ResponseEntity.ok().body(consumptionConverter.convertAllTimeseries(locationService.getConsumptionInterval(customerId, locationId, interval)));
     }
 
 }

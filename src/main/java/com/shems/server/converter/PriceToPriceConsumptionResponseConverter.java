@@ -13,4 +13,10 @@ public class PriceToPriceConsumptionResponseConverter {
         response.setPercentageDelta(source.getRight());
         return response;
     }
+
+    public PriceConsumptionResponse convert(Double source) {
+        PriceConsumptionResponse response = new PriceConsumptionResponse();
+        response.setPrice(source);
+        return response;
+    }
 }

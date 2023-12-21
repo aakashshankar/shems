@@ -1,5 +1,6 @@
 package com.shems.server.dao;
 
+import com.shems.server.dao.projection.TimeseriesLocationConsumption;
 import com.shems.server.dao.projection.LocationAndTotalConsumption;
 import com.shems.server.domain.Location;
 import jakarta.annotation.Nonnull;
@@ -12,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    String topConsumptionQuery =
+    String consumptionQuery =
             """
                 select
                   l.id,
@@ -37,6 +39,44 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   l.address
                 order BY
                   total desc
+            """;
+
+    String dailyConsumptionForALocationQuery =
+            """
+                select
+                  extract(day from e.timestamp) as as timeunit,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and l.id = :locationId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+                group by
+                  timeunit
+            """;
+
+    String hourlyConsumptionQuery =
+            """
+                select
+                  extract(hour from e.timestamp) as as timeunit,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and l.id = :locationId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+                group by
+                  timeunit
             """;
 
     String totalConsumptionQuery =
@@ -85,10 +125,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(nativeQuery = true, value = "DELETE FROM locations l WHERE l.id IN (:locationIds)")
     void deleteByIds(@Param("locationIds") Collection<Long> locationIds);
 
-    @Query(value = topConsumptionQuery,
+    @Query(value = consumptionQuery,
             nativeQuery = true)
-    Collection<LocationAndTotalConsumption> findTopConsumption(@Param("customerId") Long customerId,
-                                                               @Param("from") Date from, @Param("to") Date to);
+    Collection<LocationAndTotalConsumption> findConsumption(@Param("customerId") Long customerId,
+                                                            @Param("from") Date from, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = totalConsumptionQuery)
     Double findTotalConsumption(@Param("customerId") Long customerId,
@@ -97,4 +137,15 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(nativeQuery = true, value = avgConsumptionQuery)
     Double findAvgConsumption(@Param("customerId") Long customerId,
                               @Param("from") Date timestamp, @Param("to") Date to);
+
+    @Query(nativeQuery = true, value = dailyConsumptionForALocationQuery)
+    List<TimeseriesLocationConsumption> findDailyConsumptionForALocation(@Param("customerId") Long customerId,
+                                                                   @Param("locationId") Long locationId,
+                                                                   @Param("from") Date timestamp, @Param("to") Date to);
+
+
+    @Query(nativeQuery = true, value = hourlyConsumptionQuery)
+    List<TimeseriesLocationConsumption> findHourlyConsumptionForALocation(@Param("customerId") Long customerId,
+                                                                          @Param("locationId") Long locationId,
+                                                                          @Param("from") Date from, @Param("to") Date to);
 }

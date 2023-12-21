@@ -1,6 +1,7 @@
 package com.shems.server.service;
 
 import com.shems.server.dao.LocationRepository;
+import com.shems.server.dao.projection.TimeseriesLocationConsumption;
 import com.shems.server.domain.Location;
 import com.shems.server.dto.request.LocationRequest;
 import jakarta.inject.Inject;
@@ -8,7 +9,6 @@ import jakarta.ws.rs.BadRequestException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +62,50 @@ public class LocationService {
         repository.deleteByIds(locationIds);
     }
 
-    public List<Pair<String, Double>> getTopConsumption(Long customerId) {
-        return repository.findTopConsumption(customerId, Date.from(EPOCH), Date.from(now()))
+    public List<Pair<String, Double>> getConsumption(Long customerId) {
+        return repository.findConsumption(customerId, Date.from(EPOCH), Date.from(now()))
+                .stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
+    }
+
+    public List<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, Long locationId, String last) {
+        List<TimeseriesLocationConsumption> consumptions;
+        if ("day".equals(last)) {
+            consumptions = repository.findHourlyConsumptionForALocation(customerId, locationId,
+                    Date.from(now().minus(1, DAYS)), Date.from(now()));
+        } else {
+            Pair<Date, Date> range = identifyInterval(last);
+            Date from = range.getLeft();
+            Date to = range.getRight();
+            consumptions = repository.findDailyConsumptionForALocation(customerId, locationId, from, to);
+        }
+        return consumptions;
+    }
+
+    private Pair<Date, Date> identifyInterval(String last) {
+        Date from = null, to = null;
+        switch (last) {
+            case "three_months" -> {
+                from = Date.from(now().minus(90, DAYS));
+                to = Date.from(now());
+            }
+            case "month" -> {
+                from = Date.from(now().minus(30, DAYS));
+                to = Date.from(now());
+            }
+            case "week" -> {
+                from = Date.from(now().minus(7, DAYS));
+                to = Date.from(now());
+            }
+            default -> throw new BadRequestException("Invalid last (interval) parameter");
+        }
+        return Pair.of(from, to);
+    }
+
+    public List<Pair<String, Double>> getConsumptionInterval(Long customerId, String last) {
+        Pair<Date, Date> range = identifyInterval(last);
+        Date from = range.getLeft();
+        Date to = range.getRight();
+        return repository.findConsumption(customerId, from, to)
                 .stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
     }
 
@@ -71,7 +113,7 @@ public class LocationService {
         Double consumption = repository.findTotalConsumption(customerId,
                 Date.from(now().minus(30, DAYS)), Date.from(now()));
         Double consumptionLastMonth = repository.findTotalConsumption(customerId,
-                Date.from(Instant.now().minus(60, DAYS)), Date.from(Instant.now().minus(30, DAYS)));
+                Date.from(now().minus(60, DAYS)), Date.from(now().minus(30, DAYS)));
         Double percentageDelta = ((consumptionLastMonth - consumption)
                 / consumptionLastMonth) * 100;
         return Pair.of(consumption, percentageDelta);
@@ -81,7 +123,7 @@ public class LocationService {
         Double consumption = repository.findAvgConsumption(customerId,
                 Date.from(now().minus(30, DAYS)), Date.from(now()));
         Double consumptionLastMonth = repository.findAvgConsumption(customerId,
-                Date.from(Instant.now().minus(60, DAYS)), Date.from(Instant.now().minus(30, DAYS)));
+                Date.from(now().minus(60, DAYS)), Date.from(now().minus(30, DAYS)));
         Double percentageDelta = ((consumptionLastMonth - consumption)
                 / consumptionLastMonth) * 100;
         return Pair.of(consumption, percentageDelta);

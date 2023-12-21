@@ -22,4 +22,9 @@ public class PriceService {
         Double percentageDelta = ((total - totalLastMonth) / totalLastMonth) * 100;
         return Pair.of(total, percentageDelta);
     }
+
+
+    public Double getHistory(Long userId) {
+        return repository.getHistory(userId);
+    }
 }

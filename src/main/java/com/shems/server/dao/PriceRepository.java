@@ -31,6 +31,27 @@ public interface PriceRepository extends JpaRepository<EnergyPrice, Long> {
               AND e.type = 'energy use'
         """;
 
+    String totalPriceQuery =
+            """
+            SELECT
+              sum(ep.price * cast(e.value as decimal))
+            FROM
+              events e
+              JOIN devices d ON e.device_id = d.id
+              JOIN locations l ON d.location_id = l.id
+              JOIN energy_prices ep ON ep.hour = EXTRACT(
+                HOUR
+                FROM
+                  e.timestamp
+              )
+              AND ep.zip_code = l.zip_code
+            WHERE
+              l.user_id = :customerId
+            """;
+
     @Query(value = priceQuery, nativeQuery = true)
     Double getTotal(@Param("customerId") Long customerId, @Param("from") Date from, @Param("to") Date to);
+
+    @Query(value = totalPriceQuery, nativeQuery = true)
+    Double getHistory(@Param("customerId") Long customerId);
 }
