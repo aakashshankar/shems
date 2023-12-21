@@ -30,9 +30,9 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
                 where c.id = :customerId
             """;
 
-    String consumptionQuery =
+    String consumptionPerDeviceQuery =
             """
-                select
+    select
                   d.id,
                   d.type,
                   sum(cast(e.value as decimal)) as total
@@ -43,10 +43,26 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
-                  and e.timestamp <= :timestamp
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
                 group by
                   d.id,
                   d.type
+            """;
+
+    String totalConsumptionQuery =
+            """
+                select
+                  sum(cast(e.value as decimal)) as total
+                from
+                  devices d
+                  join locations l on d.location_id = l.id
+                  join events e on d.id = e.device_id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
             """;
 
     @Query(value = baseQuery, nativeQuery = true)
@@ -71,11 +87,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(nativeQuery = true, value = baseQuery + " and l.id = :locationId")
     Collection<Device> findAllByLocationId(@Param("customerId") Long customerId, @Param("locationId") Long locationId);
 
-    @Query(nativeQuery = true, value = consumptionQuery)
+    @Query(nativeQuery = true, value = consumptionPerDeviceQuery)
     Collection<DeviceAndTotalConsumption> getTopConsumption(@Param("customerId") Long customerId,
-                                                            @Param("timestamp") Date timestamp);
-
-    @Query(nativeQuery = true, value = consumptionQuery + " order by total desc limit 1")
-    DeviceAndTotalConsumption getMostConsumption(@Param("customerId") Long customerId,
-                                                 @Param("timestamp") Date timestamp);
+                                                            @Param("from") Date timestamp, @Param("to") Date to);
 }

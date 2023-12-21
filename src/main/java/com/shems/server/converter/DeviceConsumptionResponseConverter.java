@@ -18,12 +18,6 @@ public class DeviceConsumptionResponseConverter {
         return response;
     }
 
-    public DeviceConsumptionResponse convert(Triple<String, Double, Double> consumption) {
-        DeviceConsumptionResponse response = this.convert(consumption.getLeft(), consumption.getMiddle());
-        response.setPercentageDelta(consumption.getRight());
-        return response;
-    }
-
     public List<DeviceConsumptionResponse> convertAll(Collection<Pair<String, Double>> values) {
         return values.stream().map(c -> this.convert(c.getLeft(), c.getRight())).toList();
     }

@@ -17,8 +17,9 @@ public class LocationConsumptionToResponseConverter {
         return response;
     }
 
-    public LocationConsumptionResponse convert(Triple<String, Double, Double> consumption) {
-        LocationConsumptionResponse response = this.convert(consumption.getLeft(), consumption.getMiddle());
+    public LocationConsumptionResponse convertTotalAndAvg(Pair<Double, Double> consumption) {
+        LocationConsumptionResponse response = new LocationConsumptionResponse();
+        response.setTotal(consumption.getLeft());
         response.setPercentageDelta(consumption.getRight());
         return response;
     }

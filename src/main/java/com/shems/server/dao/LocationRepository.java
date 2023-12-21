@@ -30,12 +30,43 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
-                  and e.timestamp <= :timestamp
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
                 group by
                   l.id,
                   l.address
                 order BY
                   total desc
+            """;
+
+    String totalConsumptionQuery =
+            """
+                select
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+            """;
+
+    String avgConsumptionQuery =
+            """
+                select
+                  avg(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
             """;
 
     @Query(value = "SELECT * FROM locations l WHERE l.id = :id", nativeQuery = true)
@@ -57,9 +88,13 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(value = topConsumptionQuery,
             nativeQuery = true)
     Collection<LocationAndTotalConsumption> findTopConsumption(@Param("customerId") Long customerId,
-                                                               @Param("timestamp") Date timestamp);
+                                                               @Param("from") Date from, @Param("to") Date to);
 
-    @Query(nativeQuery = true, value = topConsumptionQuery + " limit 1")
-    LocationAndTotalConsumption findMostConsuming(@Param("customerId") Long customerId,
-                                                  @Param("timestamp") Date timestamp);
+    @Query(nativeQuery = true, value = totalConsumptionQuery)
+    Double findTotalConsumption(@Param("customerId") Long customerId,
+                                                     @Param("from") Date timestamp, @Param("to") Date to);
+
+    @Query(nativeQuery = true, value = avgConsumptionQuery)
+    Double findAvgConsumption(@Param("customerId") Long customerId,
+                              @Param("from") Date timestamp, @Param("to") Date to);
 }

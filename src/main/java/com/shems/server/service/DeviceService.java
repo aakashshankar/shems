@@ -3,26 +3,24 @@ package com.shems.server.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.dao.DeviceRepository;
-import com.shems.server.dao.projection.DeviceAndTotalConsumption;
 import com.shems.server.domain.Device;
 import com.shems.server.dto.request.DeviceRequest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.time.Instant.EPOCH;
 import static java.time.Instant.now;
 import static java.util.stream.Collectors.toMap;
 
@@ -100,16 +98,11 @@ public class DeviceService {
 
     public List<Pair<String, Double>> getTopConsumption(Long customerId) {
         List<Pair<String, Double>> top =
-                deviceRepository.getTopConsumption(customerId, Date.from(now())).stream().map(c -> Pair.of(c.getType(), c.getTotal())).toList();
+                deviceRepository.getTopConsumption(customerId,
+                        Date.from(EPOCH), Date.from(now()))
+                        .stream().map(c -> Pair.of(c.getType(), c.getTotal())).toList();
         return top.stream().collect(toMap(Pair::getLeft, Pair::getRight, Double::sum)).entrySet().stream()
                 .map(e -> Pair.of(e.getKey(), e.getValue())).toList();
     }
 
-    public Triple<String, Double, Double> getMostConsumption(Long customerId) {
-        DeviceAndTotalConsumption consumption = deviceRepository.getMostConsumption(customerId, Date.from(now()));
-        DeviceAndTotalConsumption consumptionLastMonth =
-                deviceRepository.getMostConsumption(customerId, Date.from(now().minus(30, ChronoUnit.DAYS)));
-        Double percentageDelta = ((consumptionLastMonth.getTotal() - consumption.getTotal()) / consumptionLastMonth.getTotal()) * 100;
-        return Triple.of(consumption.getType(), consumption.getTotal(), percentageDelta);
-    }
 }

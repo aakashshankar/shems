@@ -59,11 +59,18 @@ public class LocationController {
         return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getTopConsumption(customerId)));
     }
 
-    @GetMapping("most")
-    ResponseEntity<LocationConsumptionResponse> most() {
+    @GetMapping("total")
+    ResponseEntity<LocationConsumptionResponse> total() {
         Long customerId = UserContext.getCurrentUser();
-        LOGGER.info("Fetching most consuming location for customer: {}", customerId);
-        return ResponseEntity.ok().body(consumptionConverter.convert(locationService.getMostConsuming(customerId)));
+        LOGGER.info("Fetching total consumption for customer: {}", customerId);
+        return ResponseEntity.ok().body(consumptionConverter.convertTotalAndAvg(locationService.getTotalConsumption(customerId)));
+    }
+
+    @GetMapping("avg")
+    ResponseEntity<LocationConsumptionResponse> avg() {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching average consumption for customer: {}", customerId);
+        return ResponseEntity.ok().body(consumptionConverter.convertTotalAndAvg(locationService.getAvgConsumption(customerId)));
     }
 
 }

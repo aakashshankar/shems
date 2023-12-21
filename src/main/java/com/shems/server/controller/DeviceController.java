@@ -110,11 +110,4 @@ public class DeviceController {
 
     }
 
-    @GetMapping("most")
-    ResponseEntity<DeviceConsumptionResponse> most() {
-        Long customerId = UserContext.getCurrentUser();
-        LOGGER.info("Fetching top consuming device for customer: {}", customerId);
-        return ResponseEntity.ok().body(consumptionConverter.convert(deviceService.getMostConsumption(customerId)));
-    }
-
 }
