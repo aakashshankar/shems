@@ -1,5 +1,6 @@
 package com.shems.server.controller;
 
+import com.shems.server.context.UserContext;
 import com.shems.server.converter.UserToUserResponseConverter;
 import com.shems.server.dto.request.UserRequest;
 import com.shems.server.dto.response.UserResponse;
@@ -31,9 +32,12 @@ public class UserController {
                 .body(converter.convert(userService.register(request)));
     }
 
-
     @GetMapping("/me")
-    String user() {
-        return "Hello World!";
+    ResponseEntity<UserResponse> get() {
+        LOGGER.info("Fetching user details");
+        Long userId = UserContext.getCurrentUser();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(converter.convert(userService.findById(userId)));
     }
 }

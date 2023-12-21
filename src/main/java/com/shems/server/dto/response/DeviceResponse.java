@@ -9,9 +9,11 @@ import java.util.Date;
 @Setter
 public class DeviceResponse {
 
+    private Long id;
+
     private String type;
 
-    private Integer modelNumber;
+    private String modelNumber;
 
     private LocationResponse location;
 

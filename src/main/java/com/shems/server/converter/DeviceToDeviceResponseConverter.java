@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Component
 public class DeviceToDeviceResponseConverter {
 
@@ -18,7 +20,13 @@ public class DeviceToDeviceResponseConverter {
         DeviceResponse response = new DeviceResponse();
         response.setType(source.getType());
         response.setModelNumber(source.getModelNumber());
-        response.setLocation(locationToLocationResponseConverter.convert(source.getLocation()));
+        response.setId(source.getId());
+        if (nonNull(source.getLocation())) {
+            response.setLocation(locationToLocationResponseConverter.convert(source.getLocation()));
+        } else {
+            response.setLocation(null);
+        }
+        response.setEnrollmentDate(source.getEnrollmentDate());
         return response;
     }
 

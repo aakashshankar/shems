@@ -11,7 +11,8 @@ import lombok.Setter;
 public class EnergyPrice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "energy_price_generator", sequenceName = "energy_prices_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "energy_price_generator")
     private Long id;
 
     @Column(nullable = false)

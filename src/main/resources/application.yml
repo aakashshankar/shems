@@ -1,22 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/shems2
+    url: jdbc:postgresql://db.fntrcmnsmorszeyynwjk.supabase.co:5432/postgres
     username: postgres
-    password:
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: true
         format_sql: true
-okta:
-  oauth2:
-    issuer: https://ahhcash.us.auth0.com/
-    client-id: F7pHNY16hnX2aKGf4Ysk4iOnsHRBdRuZ
-    client-secret: ${OKTA_CLIENT_SECRET}
-
+  flyway:
+    url: jdbc:postgresql://db.fntrcmnsmorszeyynwjk.supabase.co:5432/postgres
+    user: postgres
+    password: ${DB_PASSWORD}
+    locations: classpath:db/migration
 client:
   origin-url: http://localhost:3000
 springdoc.api-docs.path: /api-docs
