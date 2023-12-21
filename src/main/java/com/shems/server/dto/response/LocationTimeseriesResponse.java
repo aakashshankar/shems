@@ -7,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class LocationTimeseriesResponse {
 
-    private Double value;
+    private String address;
+
+    private Double total;
 
     private String timeUnit;
 }

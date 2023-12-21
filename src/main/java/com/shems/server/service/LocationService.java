@@ -67,8 +67,8 @@ public class LocationService {
                 .stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
     }
 
-    public List<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, Long locationId, String last) {
-        List<TimeseriesLocationConsumption> consumptions;
+    public Collection<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, Long locationId, String last) {
+        Collection<TimeseriesLocationConsumption> consumptions;
         if ("day".equals(last)) {
             consumptions = repository.findHourlyConsumptionForALocation(customerId, locationId,
                     Date.from(now().minus(1, DAYS)), Date.from(now()));
@@ -101,7 +101,7 @@ public class LocationService {
         return Pair.of(from, to);
     }
 
-    public List<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, String last) {
+    public Collection<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, String last) {
         if ("day".equals(last)) {
             return repository.findDailyConsumptionForAllLocations(customerId,
                     Date.from(now().minus(1, DAYS)), Date.from(now()));

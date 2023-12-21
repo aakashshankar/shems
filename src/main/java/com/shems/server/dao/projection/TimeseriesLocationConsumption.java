@@ -4,5 +4,7 @@ public interface TimeseriesLocationConsumption {
 
     String getTimeUnit();
 
+    String getAddress();
+
     Double getTotal();
 }

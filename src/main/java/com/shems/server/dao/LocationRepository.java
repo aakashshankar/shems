@@ -64,6 +64,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             """
                 select
                   DATE(e.timestamp) as timeunit,
+                  l.address,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -75,7 +76,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  timeunit
+                  l.id, l.address, timeunit
             """;
 
     String hourlyConsumptionQuery =
@@ -101,6 +102,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             """
                 select
                   date_part('hour', e.timestamp) as timeunit,
+                  l.address,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -112,7 +114,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  timeunit
+                  l.id, l.address, timeunit
             """;
 
     String totalConsumptionQuery =
@@ -167,7 +169,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                                                             @Param("from") Date from, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = dailyConsumptionForAllLocations)
-    List<TimeseriesLocationConsumption> findDailyConsumptionForAllLocations(@Param("customerId") Long customerId,
+    Collection<TimeseriesLocationConsumption> findDailyConsumptionForAllLocations(@Param("customerId") Long customerId,
                                                                             @Param("from") Date timestamp, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = totalConsumptionQuery)
@@ -179,17 +181,17 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                               @Param("from") Date timestamp, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = dailyConsumptionForALocationQuery)
-    List<TimeseriesLocationConsumption> findDailyConsumptionForALocation(@Param("customerId") Long customerId,
+    Collection<TimeseriesLocationConsumption> findDailyConsumptionForALocation(@Param("customerId") Long customerId,
                                                                    @Param("locationId") Long locationId,
                                                                    @Param("from") Date from, @Param("to") Date to);
 
 
     @Query(nativeQuery = true, value = hourlyConsumptionQuery)
-    List<TimeseriesLocationConsumption> findHourlyConsumptionForALocation(@Param("customerId") Long customerId,
+    Collection<TimeseriesLocationConsumption> findHourlyConsumptionForALocation(@Param("customerId") Long customerId,
                                                                           @Param("locationId") Long locationId,
                                                                           @Param("from") Date from, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = hourlyConsumptionForAllLocations)
-    List<TimeseriesLocationConsumption> findHourlyConsumptionForAllLocations(@Param("customerId") Long customerId,
+    Collection<TimeseriesLocationConsumption> findHourlyConsumptionForAllLocations(@Param("customerId") Long customerId,
                                                                              @Param("from") Date from, @Param("to") Date to);
 }
