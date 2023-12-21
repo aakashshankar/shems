@@ -103,7 +103,7 @@ public class LocationService {
 
     public Collection<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, String last) {
         if ("day".equals(last)) {
-            return repository.findDailyConsumptionForAllLocations(customerId,
+            return repository.findHourlyConsumptionForAllLocations(customerId,
                     Date.from(now().minus(1, DAYS)), Date.from(now()));
         } else {
             Pair<Date, Date> range = identifyInterval(last);
