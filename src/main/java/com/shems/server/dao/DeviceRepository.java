@@ -1,5 +1,6 @@
 package com.shems.server.dao;
 
+import com.shems.server.dao.projection.DeviceAndTotalConsumption;
 import com.shems.server.domain.Device;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,24 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     String baseQuery = "SELECT d.id, d.model_number, d.type, d.location_id, d.enrollment_date FROM devices d" +
             " JOIN locations l ON d.location_id = l.id JOIN customers c ON c.id = l.user_id";
+
+    String consumptionQuery =
+            """
+                select
+                  d.id,
+                  d.type,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  devices d
+                  join locations l on d.location_id = l.id
+                  join events e on d.id = e.device_id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                group by
+                  d.id,
+                  d.type
+            """;
 
     @Query(value = baseQuery + " WHERE c.id = :customerId", nativeQuery = true)
     List<Device> findAllByUserId(@Param("customerId") Long customerId);
@@ -37,4 +56,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     @Query(nativeQuery = true, value = baseQuery + " WHERE c.id = :customerId AND l.id = :locationId")
     Collection<Device> findAllByLocationId(Long customerId, Long locationId);
+
+    @Query(nativeQuery = true, value = consumptionQuery)
+    Collection<DeviceAndTotalConsumption> getTopConsumption(Long customerId);
 }

@@ -3,9 +3,11 @@ package com.shems.server.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.context.UserContext;
+import com.shems.server.converter.DeviceConsumptionResponseConverter;
 import com.shems.server.converter.DeviceToDeviceResponseConverter;
 import com.shems.server.dto.request.DeleteDevicesRequest;
 import com.shems.server.dto.request.DeviceRequest;
+import com.shems.server.dto.response.DeviceConsumptionResponse;
 import com.shems.server.dto.response.DeviceResponse;
 import com.shems.server.service.DeviceService;
 import jakarta.inject.Inject;
@@ -34,14 +36,17 @@ public class DeviceController {
     private DeviceService deviceService;
 
     @Inject
-    private DeviceToDeviceResponseConverter deviceToDeviceResponseConverter;
+    private DeviceToDeviceResponseConverter converter;
+
+    @Inject
+    private DeviceConsumptionResponseConverter consumptionConverter;
 
     @GetMapping("/get")
     ResponseEntity<List<DeviceResponse>> getForUser() {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching all devices for customer with id {}", customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllByCustomerId(customerId)));
+                .body(converter.convertAll(deviceService.findAllByCustomerId(customerId)));
     }
 
     @PostMapping("/add")
@@ -49,7 +54,7 @@ public class DeviceController {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Adding device {} for customer with id {}", device, customerId);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(deviceToDeviceResponseConverter.convert(deviceService.register(device)));
+                .body(converter.convert(deviceService.register(device)));
     }
 
     @GetMapping("/unregistered")
@@ -57,7 +62,7 @@ public class DeviceController {
         Long customer = UserContext.getCurrentUser();
         LOGGER.info("Fetching all unregistered devices for customer with id {}", customer);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllUnregistered(customer)));
+                .body(converter.convertAll(deviceService.findAllUnregistered(customer)));
     }
 
     @DeleteMapping("{deviceId}/delete")
@@ -82,7 +87,7 @@ public class DeviceController {
         Long customer = UserContext.getCurrentUser();
         LOGGER.info("Fetching all devices for location with id {} for customer with id {}", locationId, customer);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(deviceToDeviceResponseConverter.convertAll(deviceService.findAllByLocationId(customer, locationId)));
+                .body(converter.convertAll(deviceService.findAllByLocationId(customer, locationId)));
     }
 
     @GetMapping("/allowed")
@@ -95,6 +100,14 @@ public class DeviceController {
         } catch (IOException e) {
             throw new BadRequestException("Error reading allowed devices", e);
         }
+    }
+
+    @GetMapping("consumption")
+    ResponseEntity<List<DeviceConsumptionResponse>> consumption() {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching top consuming devices for customer: {}", customerId);
+        return ResponseEntity.ok().body(consumptionConverter.convertAll(deviceService.getTopConsumption(customerId)));
+
     }
 
 }

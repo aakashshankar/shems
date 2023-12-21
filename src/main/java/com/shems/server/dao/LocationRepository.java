@@ -29,7 +29,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
-                group BY
+                group by
                   l.id,
                   l.address
                 order BY

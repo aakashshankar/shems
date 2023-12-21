@@ -7,12 +7,12 @@ import com.shems.server.domain.Device;
 import com.shems.server.dto.request.DeviceRequest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -92,5 +92,9 @@ public class DeviceService {
 
     public Collection<Device> findAllByLocationId(Long customerId, Long locationId) {
         return deviceRepository.findAllByLocationId(customerId, locationId);
+    }
+
+    public List<Pair<String, Double>> getTopConsumption(Long customerId) {
+        return deviceRepository.getTopConsumption(customerId).stream().map(c -> Pair.of(c.getType(), c.getTotal())).toList();
     }
 }
