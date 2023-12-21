@@ -72,6 +72,9 @@ public class LocationService {
         if ("day".equals(last)) {
             consumptions = repository.findHourlyConsumptionForALocation(customerId, locationId,
                     Date.from(now().minus(1, DAYS)), Date.from(now()));
+        } else if ("three_months".equals(last)) {
+            consumptions = repository.findWeeklyConsumptionForALocation(customerId, locationId,
+                    Date.from(now().minus(90, DAYS)), Date.from(now()));
         } else {
             Pair<Date, Date> range = identifyInterval(last);
             Date from = range.getLeft();

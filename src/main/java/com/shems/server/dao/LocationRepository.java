@@ -97,6 +97,25 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                 group by
                   l.id, l.address, timeunit
             """;
+    String weeklyConsumptionForALocation =
+            """
+                select
+                  DATE_TRUNC('week', e.timestamp) as timeunit,
+                  l.address,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and l.id = :locationId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+                group by
+                  l.id, l.address, timeunit
+            """;
 
 
     String hourlyConsumptionQuery =
@@ -218,5 +237,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query(nativeQuery = true, value = weeklyConsumptionForAllLocations)
     Collection<TimeseriesLocationConsumption> findWeeklyConsumptionForAllLocations(@Param("customerId") Long customerId,
+                                                                             @Param("from") Date from, @Param("to") Date to);
+
+    @Query(nativeQuery = true, value = weeklyConsumptionForALocation)
+    Collection<TimeseriesLocationConsumption> findWeeklyConsumptionForALocation(@Param("customerId") Long customerId,
+                                                                             @Param("locationId") Long locationId,
                                                                              @Param("from") Date from, @Param("to") Date to);
 }
