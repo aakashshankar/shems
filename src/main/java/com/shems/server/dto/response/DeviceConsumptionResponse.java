@@ -10,4 +10,6 @@ public class DeviceConsumptionResponse {
     private String type;
 
     private Double value;
+
+    private Double percentageIncrease;
 }

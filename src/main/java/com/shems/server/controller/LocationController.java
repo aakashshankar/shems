@@ -59,4 +59,11 @@ public class LocationController {
         return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getTopConsumption(customerId)));
     }
 
+    @GetMapping("most")
+    ResponseEntity<LocationConsumptionResponse> most() {
+        Long customerId = UserContext.getCurrentUser();
+        LOGGER.info("Fetching most consuming location for customer: {}", customerId);
+        return ResponseEntity.ok().body(consumptionConverter.convert(locationService.getMostConsuming(customerId)));
+    }
+
 }

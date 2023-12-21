@@ -16,6 +16,10 @@ public class LocationConsumptionToResponseConverter {
         return response;
     }
 
+    public LocationConsumptionResponse convert(Pair<String, Double> consumption) {
+        return this.convert(consumption.getLeft(), consumption.getRight());
+    }
+
     public List<LocationConsumptionResponse> convertAll(List<Pair<String, Double>> consumptions) {
         return consumptions.stream().map(c -> this.convert(c.getLeft(), c.getRight())).toList();
     }

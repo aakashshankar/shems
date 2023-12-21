@@ -3,6 +3,7 @@ package com.shems.server.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shems.server.dao.DeviceRepository;
+import com.shems.server.dao.projection.DeviceAndTotalConsumption;
 import com.shems.server.domain.Device;
 import com.shems.server.dto.request.DeviceRequest;
 import jakarta.inject.Inject;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.time.Instant.now;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class DeviceService {
@@ -95,6 +97,14 @@ public class DeviceService {
     }
 
     public List<Pair<String, Double>> getTopConsumption(Long customerId) {
-        return deviceRepository.getTopConsumption(customerId).stream().map(c -> Pair.of(c.getType(), c.getTotal())).toList();
+        List<Pair<String, Double>> top =
+                deviceRepository.getTopConsumption(customerId).stream().map(c -> Pair.of(c.getType(), c.getTotal())).toList();
+        return top.stream().collect(toMap(Pair::getLeft, Pair::getRight, Double::sum)).entrySet().stream()
+                .map(e -> Pair.of(e.getKey(), e.getValue())).toList();
+    }
+
+    public Pair<String, Double> getMostConsumption(Long customerId) {
+        DeviceAndTotalConsumption consumption = deviceRepository.getMostConsumption(customerId);
+        return Pair.of(consumption.getType(), consumption.getTotal());
     }
 }

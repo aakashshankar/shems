@@ -14,8 +14,20 @@ import java.util.List;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    String baseQuery = "SELECT d.id, d.model_number, d.type, d.location_id, d.enrollment_date FROM devices d" +
-            " JOIN locations l ON d.location_id = l.id JOIN customers c ON c.id = l.user_id";
+    String baseQuery =
+            """
+                select
+                  d.id,
+                  d.model_number,
+                  d.type,
+                  d.location_id,
+                  d.enrollment_date
+                from
+                  devices d
+                  JOIN locations l on d.location_id = l.id
+                  JOIN customers c on c.id = l.user_id
+                where c.id = :customerId
+            """;
 
     String consumptionQuery =
             """
@@ -35,10 +47,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
                   d.type
             """;
 
-    @Query(value = baseQuery + " WHERE c.id = :customerId", nativeQuery = true)
+    @Query(value = baseQuery, nativeQuery = true)
     List<Device> findAllByUserId(@Param("customerId") Long customerId);
 
-    @Query(value = baseQuery + " WHERE c.id = :customerId AND d.location_id IS NULL", nativeQuery = true)
+    @Query(value = baseQuery + " and d.location_id IS NULL", nativeQuery = true)
     List<Device> findAllUnregistered(@Param("customerId") Long customer);
 
     @Query(value = "SELECT count(*) FROM devices d", nativeQuery = true)
@@ -54,9 +66,12 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(nativeQuery = true, value = "DELETE FROM devices d WHERE d.id IN (:deviceIds)")
     void deleteByIds(@Param("deviceIds") Collection<Long> deviceIds);
 
-    @Query(nativeQuery = true, value = baseQuery + " WHERE c.id = :customerId AND l.id = :locationId")
-    Collection<Device> findAllByLocationId(Long customerId, Long locationId);
+    @Query(nativeQuery = true, value = baseQuery + " and l.id = :locationId")
+    Collection<Device> findAllByLocationId(@Param("customerId") Long customerId, @Param("locationId") Long locationId);
 
     @Query(nativeQuery = true, value = consumptionQuery)
-    Collection<DeviceAndTotalConsumption> getTopConsumption(Long customerId);
+    Collection<DeviceAndTotalConsumption> getTopConsumption(@Param("customerId") Long customerId);
+
+    @Query(nativeQuery = true, value = consumptionQuery + " order by total desc limit 1")
+    DeviceAndTotalConsumption getMostConsumption(@Param("customerId") Long customerId);
 }

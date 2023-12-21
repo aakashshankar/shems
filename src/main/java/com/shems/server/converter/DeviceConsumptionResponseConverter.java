@@ -17,6 +17,10 @@ public class DeviceConsumptionResponseConverter {
         return response;
     }
 
+    public DeviceConsumptionResponse convert(Pair<String, Double> pair) {
+        return this.convert(pair.getLeft(), pair.getRight());
+    }
+
     public List<DeviceConsumptionResponse> convertAll(Collection<Pair<String, Double>> values) {
         return values.stream().map(c -> this.convert(c.getLeft(), c.getRight())).toList();
     }

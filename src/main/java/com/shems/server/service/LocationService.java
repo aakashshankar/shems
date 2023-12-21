@@ -1,6 +1,7 @@
 package com.shems.server.service;
 
 import com.shems.server.dao.LocationRepository;
+import com.shems.server.dao.projection.LocationAndTotalConsumption;
 import com.shems.server.domain.Location;
 import com.shems.server.dto.request.LocationRequest;
 import jakarta.inject.Inject;
@@ -61,6 +62,10 @@ public class LocationService {
 
     public List<Pair<String, Double>> getTopConsumption(Long customerId) {
         return repository.findTopConsumption(customerId).stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
+    }
 
+    public Pair<String, Double> getMostConsuming(Long customerId) {
+        LocationAndTotalConsumption consumption = repository.findMostConsuming(customerId);
+        return Pair.of(consumption.getAddress(), consumption.getTotal());
     }
 }

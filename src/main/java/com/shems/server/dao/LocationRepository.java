@@ -55,4 +55,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(value = topConsumptionQuery,
             nativeQuery = true)
     Collection<LocationAndTotalConsumption> findTopConsumption(@Param("customerId") Long customerId);
+
+    @Query(nativeQuery = true, value = topConsumptionQuery + " limit 1")
+    LocationAndTotalConsumption findMostConsuming(@Param("customerId") Long customerId);
 }
