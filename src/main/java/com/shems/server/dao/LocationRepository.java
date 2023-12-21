@@ -57,7 +57,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  timeunit
+                  l.id, timeunit
             """;
 
     String dailyConsumptionForAllLocations =
@@ -72,7 +72,6 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
-                  and l.id = :locationId
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
@@ -95,7 +94,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  timeunit
+                  l.id, timeunit
             """;
 
     String totalConsumptionQuery =
@@ -164,7 +163,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     @Query(nativeQuery = true, value = dailyConsumptionForALocationQuery)
     List<TimeseriesLocationConsumption> findDailyConsumptionForALocation(@Param("customerId") Long customerId,
                                                                    @Param("locationId") Long locationId,
-                                                                   @Param("from") Date timestamp, @Param("to") Date to);
+                                                                   @Param("from") Date from, @Param("to") Date to);
 
 
     @Query(nativeQuery = true, value = hourlyConsumptionQuery)
