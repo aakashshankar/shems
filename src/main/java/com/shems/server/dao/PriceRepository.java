@@ -47,6 +47,7 @@ public interface PriceRepository extends JpaRepository<EnergyPrice, Long> {
               AND ep.zip_code = l.zip_code
             WHERE
               l.user_id = :customerId
+              AND e.type = 'energy use'
             """;
 
     @Query(value = priceQuery, nativeQuery = true)

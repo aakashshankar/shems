@@ -76,10 +76,10 @@ public class LocationController {
     }
 
     @GetMapping("consumption_interval")
-    ResponseEntity<List<LocationConsumptionResponse>> consumptionInInterval(@RequestParam("interval") String interval) {
+    ResponseEntity<List<LocationTimeseriesResponse>> consumptionInInterval(@RequestParam("interval") String interval) {
         Long customerId = UserContext.getCurrentUser();
         LOGGER.info("Fetching all consuming locations for customer: {} within the last {}", customerId, interval);
-        return ResponseEntity.ok().body(consumptionConverter.convertAll(locationService.getConsumptionInterval(customerId, interval)));
+        return ResponseEntity.ok().body(consumptionConverter.convertAllTimeseries(locationService.getConsumptionInterval(customerId, interval)));
     }
 
     @GetMapping("{id}/consumption_interval")

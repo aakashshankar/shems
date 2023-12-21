@@ -44,7 +44,26 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     String dailyConsumptionForALocationQuery =
             """
                 select
-                  extract(day from e.timestamp) as as timeunit,
+                  extract(day from e.timestamp) as timeunit,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and l.id = :locationId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+                group by
+                  timeunit
+            """;
+
+    String dailyConsumptionForAllLocations =
+            """
+                select
+                  extract(day from e.timestamp) as timeunit,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -63,7 +82,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     String hourlyConsumptionQuery =
             """
                 select
-                  extract(hour from e.timestamp) as as timeunit,
+                  extract(hour from e.timestamp) as timeunit,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -129,6 +148,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             nativeQuery = true)
     Collection<LocationAndTotalConsumption> findConsumption(@Param("customerId") Long customerId,
                                                             @Param("from") Date from, @Param("to") Date to);
+
+    @Query(nativeQuery = true, value = dailyConsumptionForAllLocations)
+    List<TimeseriesLocationConsumption> findDailyConsumptionForAllLocations(@Param("customerId") Long customerId,
+                                                                            @Param("from") Date timestamp, @Param("to") Date to);
 
     @Query(nativeQuery = true, value = totalConsumptionQuery)
     Double findTotalConsumption(@Param("customerId") Long customerId,

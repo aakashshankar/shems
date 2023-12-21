@@ -82,7 +82,7 @@ public class LocationService {
     }
 
     private Pair<Date, Date> identifyInterval(String last) {
-        Date from = null, to = null;
+        Date from, to;
         switch (last) {
             case "three_months" -> {
                 from = Date.from(now().minus(90, DAYS));
@@ -101,12 +101,11 @@ public class LocationService {
         return Pair.of(from, to);
     }
 
-    public List<Pair<String, Double>> getConsumptionInterval(Long customerId, String last) {
+    public List<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, String last) {
         Pair<Date, Date> range = identifyInterval(last);
         Date from = range.getLeft();
         Date to = range.getRight();
-        return repository.findConsumption(customerId, from, to)
-                .stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
+        return repository.findDailyConsumptionForAllLocations(customerId, from, to);
     }
 
     public Pair<Double, Double> getTotalConsumption(Long customerId) {
