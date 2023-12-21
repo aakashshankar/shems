@@ -2,6 +2,7 @@ package com.shems.server.converter;
 
 import com.shems.server.dto.response.DeviceConsumptionResponse;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -17,8 +18,10 @@ public class DeviceConsumptionResponseConverter {
         return response;
     }
 
-    public DeviceConsumptionResponse convert(Pair<String, Double> pair) {
-        return this.convert(pair.getLeft(), pair.getRight());
+    public DeviceConsumptionResponse convert(Triple<String, Double, Double> consumption) {
+        DeviceConsumptionResponse response = this.convert(consumption.getLeft(), consumption.getMiddle());
+        response.setPercentageDelta(consumption.getRight());
+        return response;
     }
 
     public List<DeviceConsumptionResponse> convertAll(Collection<Pair<String, Double>> values) {

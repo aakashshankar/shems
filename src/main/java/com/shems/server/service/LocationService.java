@@ -7,14 +7,17 @@ import com.shems.server.dto.request.LocationRequest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.time.Instant.now;
 
 @Service
 public class LocationService {
@@ -38,7 +41,7 @@ public class LocationService {
         toSave.setSquareFootage(request.getSquareFootage());
         toSave.setZipCode(request.getZipCode());
         toSave.setNumberOfOccupants(request.getNumberOfOccupants());
-        toSave.setStartDate(Date.from(Instant.now()));
+        toSave.setStartDate(Date.from(now()));
         repository.save(toSave);
         return toSave;
     }
@@ -61,11 +64,16 @@ public class LocationService {
     }
 
     public List<Pair<String, Double>> getTopConsumption(Long customerId) {
-        return repository.findTopConsumption(customerId).stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
+        return repository.findTopConsumption(customerId, Date.from(now()))
+                .stream().map(c -> Pair.of(c.getAddress(), c.getTotal())).toList();
     }
 
-    public Pair<String, Double> getMostConsuming(Long customerId) {
-        LocationAndTotalConsumption consumption = repository.findMostConsuming(customerId);
-        return Pair.of(consumption.getAddress(), consumption.getTotal());
+    public Triple<String, Double, Double> getMostConsuming(Long customerId) {
+        LocationAndTotalConsumption consumption = repository.findMostConsuming(customerId, Date.from(now()));
+        LocationAndTotalConsumption consumptionLastMonth = repository.findMostConsuming(customerId,
+                Date.from(Instant.now().minus(30, ChronoUnit.DAYS)));
+        Double percentageDelta = ((consumptionLastMonth.getTotal() - consumption.getTotal())
+                / consumptionLastMonth.getTotal()) * 100;
+        return Triple.of(consumption.getAddress(), consumption.getTotal(), percentageDelta);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 @Repository
@@ -29,6 +30,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
+                  and e.timestamp <= :timestamp
                 group by
                   l.id,
                   l.address
@@ -54,8 +56,10 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query(value = topConsumptionQuery,
             nativeQuery = true)
-    Collection<LocationAndTotalConsumption> findTopConsumption(@Param("customerId") Long customerId);
+    Collection<LocationAndTotalConsumption> findTopConsumption(@Param("customerId") Long customerId,
+                                                               @Param("timestamp") Date timestamp);
 
     @Query(nativeQuery = true, value = topConsumptionQuery + " limit 1")
-    LocationAndTotalConsumption findMostConsuming(@Param("customerId") Long customerId);
+    LocationAndTotalConsumption findMostConsuming(@Param("customerId") Long customerId,
+                                                  @Param("timestamp") Date timestamp);
 }

@@ -11,5 +11,5 @@ public class DeviceConsumptionResponse {
 
     private Double value;
 
-    private Double percentageIncrease;
+    private Double percentageDelta;
 }

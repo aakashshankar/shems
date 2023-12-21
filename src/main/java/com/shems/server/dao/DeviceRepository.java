@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
@@ -42,6 +43,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
                 where
                   e.type = 'energy use'
                   and l.user_id = :customerId
+                  and e.timestamp <= :timestamp
                 group by
                   d.id,
                   d.type
@@ -70,8 +72,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     Collection<Device> findAllByLocationId(@Param("customerId") Long customerId, @Param("locationId") Long locationId);
 
     @Query(nativeQuery = true, value = consumptionQuery)
-    Collection<DeviceAndTotalConsumption> getTopConsumption(@Param("customerId") Long customerId);
+    Collection<DeviceAndTotalConsumption> getTopConsumption(@Param("customerId") Long customerId,
+                                                            @Param("timestamp") Date timestamp);
 
     @Query(nativeQuery = true, value = consumptionQuery + " order by total desc limit 1")
-    DeviceAndTotalConsumption getMostConsumption(@Param("customerId") Long customerId);
+    DeviceAndTotalConsumption getMostConsumption(@Param("customerId") Long customerId,
+                                                 @Param("timestamp") Date timestamp);
 }

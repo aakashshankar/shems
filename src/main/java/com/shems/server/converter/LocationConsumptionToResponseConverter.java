@@ -2,6 +2,7 @@ package com.shems.server.converter;
 
 import com.shems.server.dto.response.LocationConsumptionResponse;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,8 +17,10 @@ public class LocationConsumptionToResponseConverter {
         return response;
     }
 
-    public LocationConsumptionResponse convert(Pair<String, Double> consumption) {
-        return this.convert(consumption.getLeft(), consumption.getRight());
+    public LocationConsumptionResponse convert(Triple<String, Double, Double> consumption) {
+        LocationConsumptionResponse response = this.convert(consumption.getLeft(), consumption.getMiddle());
+        response.setPercentageDelta(consumption.getRight());
+        return response;
     }
 
     public List<LocationConsumptionResponse> convertAll(List<Pair<String, Double>> consumptions) {

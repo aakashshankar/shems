@@ -10,4 +10,6 @@ public class LocationConsumptionResponse {
     private String address;
 
     private Double total;
+
+    private Double percentageDelta;
 }
