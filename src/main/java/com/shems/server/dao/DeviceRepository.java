@@ -32,7 +32,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     String consumptionPerDeviceQuery =
             """
-    select
+                select
                   d.id,
                   d.type,
                   sum(cast(e.value as decimal)) as total
