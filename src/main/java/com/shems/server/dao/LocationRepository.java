@@ -45,6 +45,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             """
                 select
                   DATE(e.timestamp) as timeunit,
+                  l.address,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -57,7 +58,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  l.id, timeunit
+                  l.id, l.address, timeunit
             """;
 
     String dailyConsumptionForAllLocations =
@@ -83,6 +84,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             """
                 select
                   extract(hour from e.timestamp) as timeunit,
+                  l.address,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -95,7 +97,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp <= :to
                   and e.timestamp >= :from
                 group by
-                  l.id, timeunit
+                  l.id, l.address,timeunit
             """;
 
     String hourlyConsumptionForAllLocations =
