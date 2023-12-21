@@ -102,10 +102,15 @@ public class LocationService {
     }
 
     public List<TimeseriesLocationConsumption> getConsumptionInterval(Long customerId, String last) {
-        Pair<Date, Date> range = identifyInterval(last);
-        Date from = range.getLeft();
-        Date to = range.getRight();
-        return repository.findDailyConsumptionForAllLocations(customerId, from, to);
+        if ("day".equals(last)) {
+            return repository.findDailyConsumptionForAllLocations(customerId,
+                    Date.from(now().minus(1, DAYS)), Date.from(now()));
+        } else {
+            Pair<Date, Date> range = identifyInterval(last);
+            Date from = range.getLeft();
+            Date to = range.getRight();
+            return repository.findDailyConsumptionForAllLocations(customerId, from, to);
+        }
     }
 
     public Pair<Double, Double> getTotalConsumption(Long customerId) {

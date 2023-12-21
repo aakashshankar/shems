@@ -44,7 +44,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     String dailyConsumptionForALocationQuery =
             """
                 select
-                  extract(day from e.timestamp) as timeunit,
+                  DATE(e.timestamp) as timeunit,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -63,7 +63,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     String dailyConsumptionForAllLocations =
             """
                 select
-                  extract(day from e.timestamp) as timeunit,
+                  DATE(e.timestamp) as timeunit,
                   sum(cast(e.value as decimal)) as total
                 from
                   locations l
@@ -95,6 +95,24 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                   and e.timestamp >= :from
                 group by
                   l.id, timeunit
+            """;
+
+    String hourlyConsumptionForAllLocations =
+            """
+                select
+                  date_part('hour', e.timestamp) as timeunit,
+                  sum(cast(e.value as decimal)) as total
+                from
+                  locations l
+                  join devices d ON l.id = d.location_id
+                  join events e ON e.device_id = d.id
+                where
+                  e.type = 'energy use'
+                  and l.user_id = :customerId
+                  and e.timestamp <= :to
+                  and e.timestamp >= :from
+                group by
+                  timeunit
             """;
 
     String totalConsumptionQuery =
@@ -170,4 +188,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     List<TimeseriesLocationConsumption> findHourlyConsumptionForALocation(@Param("customerId") Long customerId,
                                                                           @Param("locationId") Long locationId,
                                                                           @Param("from") Date from, @Param("to") Date to);
+
+    @Query(nativeQuery = true, value = hourlyConsumptionForAllLocations)
+    List<TimeseriesLocationConsumption> findHourlyConsumptionForAllLocations(@Param("customerId") Long customerId,
+                                                                             @Param("from") Date from, @Param("to") Date to);
 }
