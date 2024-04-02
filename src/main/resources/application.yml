@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db.fntrcmnsmorszeyynwjk.supabase.co:5432/postgres
-    username: postgres
+    url: ${DB_URL}
+    username: ${DB_USER}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
@@ -12,8 +12,8 @@ spring:
         show_sql: true
         format_sql: true
   flyway:
-    url: jdbc:postgresql://db.fntrcmnsmorszeyynwjk.supabase.co:5432/postgres
-    user: postgres
+    url: ${DB_URL}
+    user: ${DB_USER}
     password: ${DB_PASSWORD}
     locations: classpath:db/migration
 client:
