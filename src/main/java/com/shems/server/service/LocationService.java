@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static java.time.Instant.EPOCH;
 import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Objects.nonNull;
 
 @Service
 public class LocationService {
@@ -120,9 +121,12 @@ public class LocationService {
                 Date.from(now().minus(30, DAYS)), Date.from(now()));
         Double consumptionLastMonth = repository.findTotalConsumption(customerId,
                 Date.from(now().minus(60, DAYS)), Date.from(now().minus(30, DAYS)));
-        Double percentageDelta = ((consumptionLastMonth - consumption)
-                / consumptionLastMonth) * 100;
-        return Pair.of(consumption, percentageDelta);
+        if (nonNull(consumptionLastMonth)) {
+            Double percentageDelta = ((consumptionLastMonth - consumption)
+                    / consumptionLastMonth) * 100;
+            return Pair.of(consumption, percentageDelta);
+        }
+        return Pair.of(consumption, 0.0);
     }
 
     public Pair<Double, Double> getAvgConsumption(Long customerId) {
@@ -130,8 +134,11 @@ public class LocationService {
                 Date.from(now().minus(30, DAYS)), Date.from(now()));
         Double consumptionLastMonth = repository.findAvgConsumption(customerId,
                 Date.from(now().minus(60, DAYS)), Date.from(now().minus(30, DAYS)));
-        Double percentageDelta = ((consumptionLastMonth - consumption)
-                / consumptionLastMonth) * 100;
-        return Pair.of(consumption, percentageDelta);
+        if (nonNull(consumptionLastMonth)) {
+            Double percentageDelta = ((consumptionLastMonth - consumption)
+                    / consumptionLastMonth) * 100;
+            return Pair.of(consumption, percentageDelta);
+        }
+        return Pair.of(consumption, 0.0);
     }
 }

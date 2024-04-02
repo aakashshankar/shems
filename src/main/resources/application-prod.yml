@@ -1,0 +1,5 @@
+client:
+    origin-url: https://shems-client.vercel.app
+
+server:
+  origin-name: shems-e702180b2976.herokuapp.com

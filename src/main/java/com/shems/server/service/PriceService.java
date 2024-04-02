@@ -9,6 +9,7 @@ import java.util.Date;
 
 import static java.time.Instant.now;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Objects.nonNull;
 
 @Service
 public class PriceService {
@@ -19,8 +20,11 @@ public class PriceService {
     public Pair<Double, Double> getTotal(Long customerId) {
         Double total = repository.getTotal(customerId, Date.from(now().minus(30, DAYS)), Date.from(now()));
         Double totalLastMonth = repository.getTotal(customerId, Date.from(now().minus(60, DAYS)), Date.from(now().minus(30, DAYS)));
-        Double percentageDelta = ((total - totalLastMonth) / totalLastMonth) * 100;
-        return Pair.of(total, percentageDelta);
+        if (nonNull(total)) {
+            Double percentageDelta = ((total - totalLastMonth) / totalLastMonth) * 100;
+            return Pair.of(total, percentageDelta);
+        }
+        return Pair.of(0.0, 0.0);
     }
 
 

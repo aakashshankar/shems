@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -13,6 +14,9 @@ import java.io.IOException;
 
 @Component
 public class UserFilter extends OncePerRequestFilter {
+
+    @Value("${server.origin-name}")
+    private String serverOriginName;
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(UserFilter.class);
 
@@ -53,7 +57,7 @@ public class UserFilter extends OncePerRequestFilter {
 
     private String getUser(HttpServletRequest request) {
         String server = request.getServerName();
-        if (server.startsWith("localhost")) {
+        if (server.startsWith(serverOriginName)) {
             return null;
         }
         return server.substring(0, server.indexOf("."));

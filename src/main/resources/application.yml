@@ -18,4 +18,6 @@ spring:
     locations: classpath:db/migration
 client:
   origin-url: http://localhost:3000
+server:
+  origin-name: localhost
 springdoc.api-docs.path: /api-docs
